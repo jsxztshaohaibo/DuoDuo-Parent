@@ -1,0 +1,256 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.jsxztshaohaibo</groupId>
+	<artifactId>DuoDuo-Parent</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+
+    
+	<properties>
+        <java.version>1.8</java.version>
+        <!-- 指定resources读取和写入文件的字符编码 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <!-- <spring-boot.version>2.2.5.RELEASE</spring-boot.version>-->
+        <spring-boot.version>2.1.14.RELEASE</spring-boot.version>
+        <spring-cloud.version>Greenwich.SR2</spring-cloud.version>
+        
+         <spring-cloud-alibaba.version>2.1.0.RELEASE</spring-cloud-alibaba.version>
+    </properties>
+	<!-- 
+		dependencies 即使在子项目中不写该依赖项，那么子项目仍然会从父项目中继承该依赖项（全部继承）
+		dependencyManagement 
+							解决单继承问题，类似parent标签
+							
+							只是声明依赖，并不实现引入，需要子项目显示的声明需要用的依赖(但不需要指定版本version)。
+							  
+							  如果不在子项目中声明依赖，是不会从父项目中继承下来的；
+							  
+							  只有在子项目中写了该依赖项，并且没有指定具体版本，才会从父项目中继承该项，
+							  
+							  并且 version 和 scope 都读取自父 pom; 
+							  
+							  另外如果子项目中指定了版本号，那么会使用子项目中指定的jar版本。
+	 -->
+	<dependencyManagement>
+        <dependencies>
+        
+        	<!-- spring boot 依赖 -->
+           <dependency>
+            	<!-- 
+            	<type>pom</type>把spring-boot-dependencies引入为pom 文件
+                <scope>import</scope>解决单继承问题，类似parent标签，把spring-boot-dependencies引入到dependencyManagement
+                 -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <!-- spring cloud 依赖 -->
+	         <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <!-- spring-cloud-alibaba 依赖 -->
+		    <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            
+            
+        </dependencies>
+    </dependencyManagement>
+    
+    
+    <dependencies>
+    	<!-- seata 分布式事务控制组件 
+    	 <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+        </dependency>-->
+    	<!-- sentinel 熔断降级组件 -->
+    	 <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+    
+    	<!-- nacos 服务发现 -->
+    	 <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+        
+        <!-- spring cloud-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter</artifactId>
+        </dependency>
+    	
+    </dependencies>
+    
+    <!-- 
+	    <distributionManagement>
+	    </distributionManagement>
+    
+    
+	    <repositories>
+	    	<repository>
+	    	</repository>
+	    </repositories>
+	           用来配置maven项目的远程仓库。
+    	允许我们可以在POM中配置其它的远程仓库。
+    	比如你有一个局域网的远程仓库，使用该仓库能大大提高下载速度，继而提高构建速度，
+    	也有可能你依赖的一个jar在central中找不到，它只存在于某个特定的公共仓库，这样你也不得不添加那个远程仓库的配置。
+    	
+	    <pluginRepositories>
+	     	<pluginRepository>
+	     	</pluginRepository>
+	     </pluginRepositories>
+	          用来配置maven插件的远程仓库
+    	这是配置Maven从什么地方下载 自己用的插件来构建项目
+    		（Maven的所有实际行为都由其插件完成，比如：compile packge clean  install）。
+    	该元素的内部配置和<repository>完全一样。
+     -->
+     
+     <repositories>
+		<repository>
+			<id>aliyun-Rep</id>
+			<url>https://maven.aliyun.com/repository/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	 <pluginRepositories>
+		<pluginRepository>
+			<id>aliyun-pluginRep</id>
+			<url>https://maven.aliyun.com/repository/public</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+     
+    <build>
+    	<!-- 多目录资源文件
+    		<resources>
+				<resource>
+					<directory>src/main/resources1</directory>
+				</resource>
+				<resource>
+					<directory>src/main/resources2</directory>
+				</resource>
+			</resources>
+			有的时候，资源文件中存在变量引用，可以使用<filtering>标签指定是否替换资源中的变量。
+			变量的来源为pom文件中的<properties>标签中定义的变量。
+			也可以在<build>中定义过滤器资源。
+
+			可能目录下的资源文件都需要被使用，可以使用<includes>和<excludes>来精细控制。
+				<build>
+					<filters>
+						<filter>filter-values.properties</filter>
+					</filters>
+					<resources>
+						<resource>
+							<directory>src/main/resources</directory>
+							<filtering>true</filtering>
+							<includes>
+				              <include>**/*.txt</include>
+				              <include>**/*.rtf</include>
+				            </includes>
+				            <excludes>
+				              <exclude>**/*.bmp</exclude>
+				              <exclude>**/*.jpg</exclude>
+				              <exclude>**/*.jpeg</exclude>
+				              <exclude>**/*.gif</exclude>
+				            </excludes>
+						</resource>
+					</resources>
+				</build>
+    	 -->
+    	
+    	<!-- 
+    			plugins 下的 plugin 是真实使用的，
+    			而 pluginManagement 下的 plugins 下的 plugin 则仅仅是一种声明，
+    			子项目中可以对 pluginManagement 下的 plugin 进行信息的选择、继承、覆盖
+    			
+    			
+    			maven会在当前项目中加载baiplugins声明的插件；
+    			
+				pluginManagement是表示插件声明，即你在项zhi目中的pluginManagement下声明了插件，
+								maven不会加载该插件，pluginManagement声明可以被继承。
+				
+				pluginManagement的一个使用案例是当有父子项目的时候，
+								父项目中可以利用pluginManagement声明子项目中需要用到的插件，
+								之后，当某个或者某几个子项目需要加载该插件的时候，
+								就可以在子项目中plugins节点只配置 groupId 和 artifactId就可以完成插件的引用。
+				
+				pluginManagement主要是为了统一管理插件，确保所有子项目使用的插件版本保持一致，
+				
+    			
+    			类似  上面的   dependencies 和  dependencyManagement 
+    	 -->
+    	
+    	<plugins>
+    		<!-- java编译插件 -->
+    		<plugin>
+		      <groupId>org.apache.maven.plugins</groupId>
+		      <artifactId>maven-compiler-plugin</artifactId>
+		      <version>3.8.1</version>
+		      <configuration>
+		          <!-- 一般而言，target与source是保持一致的，
+		          		但是，有时候为了让程序能在其他版本的jdk中运行
+		          		(对于低版本目标jdk，源代码中需要没有使用低版本jdk中不支持的语法)，
+		          		会存在target不同于source的情况 
+		          -->
+		          <source>${java.version}</source> <!-- 源代码使用的开发版本 -->
+		          <target>${java.version}</target> <!-- 需要生成的目标class文件的编译版本 -->
+		          <encoding>${project.build.sourceEncoding}</encoding><!-- 使用encoding参数课解决java文件的编码问题 -->
+		          <!-- <skipTests>true</skipTests>跳过测试 -->  
+		     </configuration>
+		 </plugin>
+		 
+		 <!-- java资源(配置文件)插件
+		                    此plugin可以把源代码(src/main/java)目录下的配置文件，打包到相应位置，
+		                    这里主要是为了打包Mybatis的mapper.xml文件
+		 <plugin>
+        	<groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-resources-plugin</artifactId>
+	        <version>3.0.2</version>
+	        <configuration>
+	          <encoding>UTF-8</encoding>
+	        </configuration>
+	      </plugin>
+	      -->
+    	</plugins>
+    </build>
+    
+    
+    
+    <modules>
+    	<module>DuoDuo-Order</module>
+    	<module>DuoDuo-User</module>
+    	<module>DuoDuo-Credits</module>
+    	<module>DuoDuo-Order-Apis</module>
+    	<module>DuoDuo-Gateway</module>
+    </modules>
+</project>
