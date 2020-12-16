@@ -21,11 +21,11 @@
          <spring-cloud-alibaba.version>2.1.0.RELEASE</spring-cloud-alibaba.version>
     </properties>
 	<!-- 
-		dependencies 即使在子项目中不写该依赖项，那么子项目仍然会从父项目中继承该依赖项（全部继承）
+		        dependencies 即使在子项目中不写该依赖项，那么子项目仍然会从父项目中继承该依赖项（全部继承）
 		dependencyManagement 
-							解决单继承问题，类似parent标签
+							  解决单继承问题，类似parent标签
 							
-							只是声明依赖，并不实现引入，需要子项目显示的声明需要用的依赖(但不需要指定版本version)。
+							  只是声明依赖，并不实现引入，需要子项目显示的声明需要用的依赖(但不需要指定版本version)。
 							  
 							  如果不在子项目中声明依赖，是不会从父项目中继承下来的；
 							  
@@ -252,5 +252,7 @@
     	<module>DuoDuo-Credits</module>
     	<module>DuoDuo-Order-Apis</module>
     	<module>DuoDuo-Gateway</module>
+    	<module>DuoDuo-ES</module>
+    	<module>DuoDuo-ES-Apis</module>
     </modules>
 </project>

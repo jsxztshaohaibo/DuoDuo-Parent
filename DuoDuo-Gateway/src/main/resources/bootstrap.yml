@@ -1,12 +1,18 @@
 server:
  port: 8888
 
-# \u9700\u8981\u914d\u7f6e\u7684\u670d\u52a1\u540d
+# \u9700\u8981\u914d\u7f6e\u7684\u670d\u52a1\u540d  
+# order:8085
+# credits:8081
+# user:8082
+# es:8086
+# gateway:8888
 duoduo:
  service:
   order: order
   credits: credits
   user: user
+  es: es
 management:
  endpoints:
   web:

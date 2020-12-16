@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.jsxztshaohaibo.entity.OrderEntity;
 @Component
-public class OrderServiceCallback implements IOrderServiceFeign {
+public class OrderServiceFeignCallback implements IOrderServiceFeign {
 
 	@Override
 	public OrderEntity getOrderByIdFeign(String id) {

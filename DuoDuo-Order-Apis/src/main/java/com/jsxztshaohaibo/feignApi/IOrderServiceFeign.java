@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.jsxztshaohaibo.entity.OrderEntity;
 
 
-@FeignClient(value="order",fallback = OrderServiceCallback.class)
+@FeignClient(value="order",fallback = OrderServiceFeignCallback.class)
 public interface IOrderServiceFeign {
 	
 	String API_PREFIX = "/order/";
