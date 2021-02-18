@@ -254,5 +254,6 @@
     	<module>DuoDuo-Gateway</module>
     	<module>DuoDuo-ES</module>
     	<module>DuoDuo-ES-Apis</module>
+    	<module>DuoDuo-Test</module>
     </modules>
 </project>
