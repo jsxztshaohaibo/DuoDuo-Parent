@@ -1,5 +1,6 @@
 package com.jsxztshaohaibo.test.pattern.strategy;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  */
 //@Component(value="moblieSMSStrategy")
 @Component
+@Order(2)
 public class MoblieSMSStrategy implements ISMSStrategy {
 
 	@Override
