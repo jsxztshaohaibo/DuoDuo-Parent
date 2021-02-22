@@ -1,6 +1,6 @@
 package com.jsxztshaohaibo.test.pattern.chain.outer;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class OuterChainController {
 		 * 
 		 * donext。。。。
 		 */
-		return "责任链执行完毕"+LocalDate.now().toString();
+		return "责任链执行完毕"+LocalTime.now().toString();
 	}
 
 }
