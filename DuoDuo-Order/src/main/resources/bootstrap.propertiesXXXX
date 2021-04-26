@@ -1,0 +1,7 @@
+server.port=8085
+spring.application.name=order
+spring.cloud.nacos.discovery.server-addr=127.0.0.1:8848
+
+
+##\u5F00\u542F swagger \u5728\u7EBF\u63A5\u53E3\u6587\u6863
+swagger.open= true

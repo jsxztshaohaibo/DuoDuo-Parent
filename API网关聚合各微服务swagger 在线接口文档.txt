@@ -1,0 +1,221 @@
+步骤 一 ： 在各个业务微服务的项目里操作：
+1. 各个微服务中增加swagger、和swagger-ui 依赖，增加spring-web依赖
+        <!--swagger2 -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+		</dependency>
+		<!--之所以引入swagger-models是为了防止swagger报NumberFormatException异常-->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-models</artifactId>
+		</dependency>
+		<!--swagger-bootstrap-ui   最新的 knife4j-->
+		<dependency>
+			<groupId>com.github.xiaoymin</groupId>
+			<artifactId>swagger-bootstrap-ui</artifactId>
+		</dependency>
+        <!-- spring MVC-->
+     	<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+2.在配置文件中增加开启swagger
+        ##开启 swagger 在线接口文档
+        swagger.open= true
+3.新建swagger配置文件
+        package com.jsxztshaohaibo.config;
+
+        import io.swagger.annotations.ApiOperation;
+        import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+        import org.springframework.context.annotation.Bean;
+        import org.springframework.context.annotation.Configuration;
+        import springfox.documentation.builders.PathSelectors;
+        import springfox.documentation.builders.RequestHandlerSelectors;
+        import springfox.documentation.service.ApiInfo;
+        import springfox.documentation.service.Contact;
+        import springfox.documentation.spi.DocumentationType;
+        import springfox.documentation.spring.web.plugins.Docket;
+        import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+        import java.util.ArrayList;
+
+        @Configuration
+        @EnableSwagger2
+        //prefix+name通过application.yml文件配置是否启动swagger在线生成文档
+        @ConditionalOnProperty(prefix = "swagger", name = "open", havingValue = "true")
+        public class SwaggerConfig {
+            /**
+             * 创建获取api应用
+             *
+             * @return
+             */
+            @Bean
+            public Docket createRestApi() {
+                return new Docket(DocumentationType.SWAGGER_2)
+                        .apiInfo(apiInfo())
+                        .select()
+                        //这里采用包含注解的方式来确定要显示的接口(建议使用这种)
+                        .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+                        .paths(PathSelectors.any())
+                        .build();
+            }
+
+            /**
+             * 配置swagger文档显示的相关内容标识(信息会显示到swagger页面)
+             *
+             * @return
+             */
+            private ApiInfo apiInfo() {
+                Contact contact = new Contact("haohaibo", "", "jsxztshaohaibo@sina.com");
+                return new ApiInfo(
+                        "user",
+                        "user开放的接口",
+                        "v1.0",
+                        "",
+                        contact,
+                        "",
+                        "",
+                        new ArrayList<>()
+                );
+            }
+        }
+
+4.在接口的java类中增加注解
+     类上： @Api(value = "User功能接口",description = "User功能", tags = {"User接口"})
+   方法上：  @ApiOperation(value = "查询订单接口 by restTemplate",notes = "根据用户ID和订单ID查询订单接口", position = 1)
+方法参数上：  @ApiParam(name = "userId",value = "用户ID")
+
+步骤 二 ： 在网关（基于springcloud gateway的网关）的项目里操作：
+
+1.增加swagger、和swagger-ui 依赖，增加网关依赖
+        <!--gateway网关-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+
+2.在 配置文件中增加各个微服务的路由配置：
+        spring:
+          application:
+            name: duoduogateway
+          cloud:
+            gateway:
+              routes:
+                ## "-"(减号) 表示是 routes    集合  的意思  ，从当前"-" 到下一个"-" 之间的配置都是表示的这一个route 的配置信息
+                ## predicates(断言) 断言为true的时候才会 访问到 uri 指定的地址;
+                ##            比如判断是否以 “XXX”开头的 路径
+                ##			   下面的配置就是说 如果都是以服务名开头的地址，就转发到  服务名对应的系统上去
+                ## filter     断言为true的时候 ，再经过一系列的filter  ,才会访问到   uri 指定的地址，
+                ##            比如增加一个uri 前缀， 移除uri前面几个路径
+                ##            - PrefixPath=/mypath   在请求uri 前面 拼接上 /mypath      请求 /hello                -->/mypath/hello
+                ##            - StripPrefix=2      移除uri前面2个(/order/mypath)路径   请求  /order/mypath/hello   -->/hello
+                ## 各种  predicate  、filter  再官网都有特定的实现 ，可以参考 官网的 docs
+                - id: ${duoduo.service.order}
+                  predicates:
+                    - Path= /${duoduo.service.order}/**
+                  filters:
+                  #- StripPrefix= 1
+                  uri: lb://${duoduo.service.order}
+                - id: ${duoduo.service.credits}
+                  predicates:
+                    - Path= /${duoduo.service.credits}/**
+                  filters:
+                  #- StripPrefix= 1
+                  uri: lb://${duoduo.service.credits}
+                - id: ${duoduo.service.user}
+                  predicates:
+                    - Path= /${duoduo.service.user}/**
+                  filters:
+                  #- StripPrefix= 1
+                  uri: lb://${duoduo.service.user}
+            loadbalancer:
+              retry:
+                enabled: true
+
+
+3.新建一个swagger 的配置类
+
+    package com.jsxztshaohaibo.config;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.beans.factory.annotation.Value;
+    import org.springframework.cloud.gateway.route.Route;
+    import org.springframework.cloud.gateway.route.RouteLocator;
+    import org.springframework.stereotype.Component;
+    import reactor.core.publisher.Flux;
+    import springfox.documentation.swagger.web.SwaggerResource;
+    import springfox.documentation.swagger.web.SwaggerResourcesProvider;
+    import java.util.*;
+    /*** 聚合各个服务的swagger接口*/
+    @Component
+    public class DuoduoSwaggerResourceProvider implements SwaggerResourcesProvider {
+        /*** swagger2默认的url后缀*/
+        private static final String SWAGGER2URL = "/v2/api-docs";
+        /*** 网关路由*/
+        private final RouteLocator routeLocator;
+        /*** 网关应用名称*/
+        @Value("${spring.application.name}")
+        private String self;
+        @Autowired
+        public DuoduoSwaggerResourceProvider(RouteLocator routeLocator) {
+            this.routeLocator = routeLocator;
+        }
+        @Override
+        public List<SwaggerResource> get() {
+            List<SwaggerResource> resources = new ArrayList<>();
+            List<String> routeHosts = new ArrayList<>();
+            //取出gateway的route
+            // 获取所有可用的host：serviceId
+            routeLocator.getRoutes().filter(route -> route.getUri().getHost() != null)
+                    .filter(route -> !self.equals(route.getUri().getHost()))
+                    .subscribe(route -> routeHosts.add(route.getUri().getHost()));
+            // 记录已经添加过的server，存在同一个应用注册了多个服务在eureka上
+            Set<String> dealed = new HashSet<>();
+            routeHosts.forEach(instance -> {
+                // 拼接url
+                String url = "/" + instance.toLowerCase() + SWAGGER2URL;
+                if (!dealed.contains(url)) {
+                    dealed.add(url);
+                    SwaggerResource swaggerResource = new SwaggerResource();
+                    swaggerResource.setUrl(url);
+                    swaggerResource.setName(instance);
+                    resources.add(swaggerResource);
+                }
+            });
+            return resources;
+        }
+    }
+
+4.新建 swagger的接口文档controller
+        package com.jsxztshaohaibo.controller;
+
+        import com.jsxztshaohaibo.config.DuoduoSwaggerResourceProvider;
+        import org.springframework.beans.factory.annotation.Autowired;
+        import org.springframework.http.HttpStatus;
+        import org.springframework.http.ResponseEntity;
+        import org.springframework.web.bind.annotation.RequestMapping;
+        import org.springframework.web.bind.annotation.RestController;
+        import springfox.documentation.swagger.web.*;
+        import java.util.List;
+        /*** swagger聚合接口，三个接口都是swagger-ui.html需要访问的接口*/
+        @RestController
+        @RequestMapping("/swagger-resources")
+        public class SwaggerResourceController {
+            private DuoduoSwaggerResourceProvider swaggerResourceProvider;
+            @Autowired
+            public SwaggerResourceController(DuoduoSwaggerResourceProvider swaggerResourceProvider) {
+                this.swaggerResourceProvider = swaggerResourceProvider;
+            }
+            @RequestMapping(value = "/configuration/security")
+            public ResponseEntity<SecurityConfiguration> securityConfiguration() {
+                return new ResponseEntity<>(SecurityConfigurationBuilder.builder().build(), HttpStatus.OK);
+            }
+            @RequestMapping(value = "/configuration/ui")
+            public ResponseEntity<UiConfiguration> uiConfiguration() {
+                return new ResponseEntity<>(UiConfigurationBuilder.builder().build(), HttpStatus.OK);
+            }
+            @RequestMapping
+            public ResponseEntity<List<SwaggerResource>> swaggerResources() {
+                return new ResponseEntity<>(swaggerResourceProvider.get(), HttpStatus.OK);
+            }
+        }

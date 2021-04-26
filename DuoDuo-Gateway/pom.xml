@@ -8,6 +8,12 @@
   <artifactId>DuoDuo-Gateway</artifactId>
  
   	<dependencies>
+        <!-- nacos 服务发现 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
   		<!--gateway网关-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
@@ -19,6 +25,7 @@
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-spring-cloud-gateway-adapter</artifactId>
         </dependency>
+
   	</dependencies>
   	
 </project>

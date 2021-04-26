@@ -14,11 +14,16 @@
         <!-- 指定resources读取和写入文件的字符编码 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <!-- <spring-boot.version>2.2.5.RELEASE</spring-boot.version>-->
-        <spring-boot.version>2.1.14.RELEASE</spring-boot.version>
-        <spring-cloud.version>Greenwich.SR2</spring-cloud.version>
-        
-         <spring-cloud-alibaba.version>2.1.0.RELEASE</spring-cloud-alibaba.version>
+
+		<spring-boot.version>2.3.7.RELEASE</spring-boot.version>
+		<spring-cloud.version>Hoxton.SR9</spring-cloud.version>
+		<spring-cloud-alibaba.version>2.2.5.RELEASE</spring-cloud-alibaba.version>
+
+		<swagger.version>2.9.0</swagger.version>
+		<swagger-models.version>1.6.2</swagger-models.version>
+		<swagger-bootstrap-ui>1.9.6</swagger-bootstrap-ui>
+		<!--<swagger.knife4j-spring-ui.version>3.0.2</swagger.knife4j-spring-ui.version>-->
+
     </properties>
 	<!-- 
 		        dependencies 即使在子项目中不写该依赖项，那么子项目仍然会从父项目中继承该依赖项（全部继承）
@@ -68,9 +73,43 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            
-            
-            
+
+			<!--swagger2 -->
+			<dependency>
+				<groupId>io.springfox</groupId>
+				<artifactId>springfox-swagger2</artifactId>
+				<exclusions>
+					<exclusion>
+						<groupId>io.swagger</groupId>
+						<artifactId>swagger-models</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>io.swagger</groupId>
+						<artifactId>swagger-annotations</artifactId>
+					</exclusion>
+				</exclusions>
+				<version>${swagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-annotations</artifactId>
+				<version>${swagger-models.version}</version>
+			</dependency>
+			<!--之所以引入swagger-models是为了防止swagger报NumberFormatException异常-->
+			<dependency>
+				<groupId>io.swagger</groupId>
+				<artifactId>swagger-models</artifactId>
+				<version>${swagger-models.version}</version>
+			</dependency>
+
+			<!--swagger-bootstrap-ui   最新的 knife4j-->
+			<dependency>
+				<groupId>com.github.xiaoymin</groupId>
+				<artifactId>swagger-bootstrap-ui</artifactId>
+				<version>${swagger-bootstrap-ui}</version>
+			</dependency>
+
+
         </dependencies>
     </dependencyManagement>
     
@@ -88,7 +127,7 @@
         </dependency>
     
     	<!-- nacos 服务发现 -->
-    	 <dependency>
+		<dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
@@ -98,8 +137,25 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter</artifactId>
         </dependency>
-    	
-    </dependencies>
+
+
+		<!--swagger2 -->
+		<dependency>
+			<groupId>io.springfox</groupId>
+			<artifactId>springfox-swagger2</artifactId>
+		</dependency>
+		<!--之所以引入swagger-models是为了防止swagger报NumberFormatException异常-->
+		<dependency>
+			<groupId>io.swagger</groupId>
+			<artifactId>swagger-models</artifactId>
+		</dependency>
+		<!--swagger-bootstrap-ui   最新的 knife4j-->
+		<dependency>
+			<groupId>com.github.xiaoymin</groupId>
+			<artifactId>swagger-bootstrap-ui</artifactId>
+		</dependency>
+
+	</dependencies>
     
     <!-- 
 	    <distributionManagement>

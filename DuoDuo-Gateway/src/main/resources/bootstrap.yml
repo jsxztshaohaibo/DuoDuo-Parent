@@ -1,67 +1,43 @@
 server:
- port: 8888
+  port: 8008
 
-# \u9700\u8981\u914d\u7f6e\u7684\u670d\u52a1\u540d  
+# 需要配置的服务名
 # order:8085
 # credits:8081
 # user:8082
 # es:8086
-# gateway:8888
+# gateway:8008
 duoduo:
- service:
-  order: order
-  credits: credits
-  user: user
-  es: es
+  service:
+    order: order
+    credits: credits
+    user: user
+    es: es
 management:
- endpoints:
-  web:
-  exposure:
-   include: '*'
+  endpoints:
+    web:
+    exposure:
+      include: '*'
+
+
 spring:
- application:
-  name: gateway
- cloud:
-  sentinel:
-   transport:
-    port: 8090
-    dashboard: localhost:8089
-  nacos:
-   discovery:
-    server-addr: 127.0.0.1:8848
-    locator:
-     enabled: true
-  gateway:
-   routes:
-## "-"(\u51cf\u53f7) \u8868\u793a\u662f routes    \u96c6\u5408  \u7684\u610f\u601d  \uff0c\u4ece\u5f53\u524d"-" \u5230\u4e0b\u4e00\u4e2a"-" \u4e4b\u95f4\u7684\u914d\u7f6e\u90fd\u662f\u8868\u793a\u7684\u8fd9\u4e00\u4e2aroute \u7684\u914d\u7f6e\u4fe1\u606f
-## predicates(\u65ad\u8a00) \u65ad\u8a00\u4e3atrue\u7684\u65f6\u5019\u624d\u4f1a \u8bbf\u95ee\u5230 uri \u6307\u5b9a\u7684\u5730\u5740;
-##            \u6bd4\u5982\u5224\u65ad\u662f\u5426\u4ee5 \u201cXXX\u201d\u5f00\u5934\u7684 \u8def\u5f84
-##			     \u4e0b\u9762\u7684\u914d\u7f6e\u5c31\u662f\u8bf4 \u5982\u679c\u90fd\u662f\u4ee5\u670d\u52a1\u540d\u5f00\u5934\u7684\u5730\u5740\uff0c\u5c31\u8f6c\u53d1\u5230  \u670d\u52a1\u540d\u5bf9\u5e94\u7684\u7cfb\u7edf\u4e0a\u53bb
-## filter     \u65ad\u8a00\u4e3atrue\u7684\u65f6\u5019 \uff0c\u518d\u7ecf\u8fc7\u4e00\u7cfb\u5217\u7684filter  ,\u624d\u4f1a\u8bbf\u95ee\u5230   uri \u6307\u5b9a\u7684\u5730\u5740\uff0c
-##            \u6bd4\u5982\u589e\u52a0\u4e00\u4e2auri \u524d\u7f00\uff0c \u79fb\u9664uri\u524d\u9762\u51e0\u4e2a\u8def\u5f84
-##            - PrefixPath=/mypath   \u5728\u8bf7\u6c42uri \u524d\u9762 \u62fc\u63a5\u4e0a /mypath      \u8bf7\u6c42 /hello                -->/mypath/hello
-##            - StripPrefix=2      \u79fb\u9664uri\u524d\u97622\u4e2a(/order/mypath)\u8def\u5f84   \u8bf7\u6c42  /order/mypath/hello   -->/hello
-## \u5404\u79cd  predicate  \u3001filter  \u518d\u5b98\u7f51\u90fd\u6709\u7279\u5b9a\u7684\u5b9e\u73b0 \uff0c\u53ef\u4ee5\u53c2\u8003 \u5b98\u7f51\u7684 docs
-   - id: ${duoduo.service.order}
-     predicates:
-     - Path= /${duoduo.service.order}/**
-     filters:
-     #- StripPrefix= 1
-     uri: lb://${duoduo.service.order}
-   - id: ${duoduo.service.credits}
-     predicates:
-     - Path= /${duoduo.service.credits}/**
-     filters:
-     #- StripPrefix= 1
-     uri: lb://${duoduo.service.credits}
-   - id: ${duoduo.service.user}
-     predicates:
-     - Path= /${duoduo.service.user}/**
-     filters:
-     #- StripPrefix= 1
-     uri: lb://${duoduo.service.user}
-  loadbalancer:
-   retry:
-    enabled: true
+  application:
+    name: duoduogateway
+  cloud:
+    sentinel:
+      transport:
+        port: 8090
+        dashboard: localhost:8850
+    nacos:
+      discovery:
+        server-addr: localhost:8850
+        locator:
+          enabled: true
+          #使用服务名称的小写(服务名称不能带下划线)
+          lower-case-service-id: on
+
+    loadbalancer:
+      retry:
+        enabled: true
 
 
