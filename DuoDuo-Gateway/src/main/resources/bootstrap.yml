@@ -35,7 +35,35 @@ spring:
           enabled: true
           #使用服务名称的小写(服务名称不能带下划线)
           lower-case-service-id: on
-
+    gateway:
+      routes:
+        ## "-"(减号) 表示是 routes    集合  的意思  ，从当前"-" 到下一个"-" 之间的配置都是表示的这一个route 的配置信息
+        ## predicates(断言) 断言为true的时候才会 访问到 uri 指定的地址;
+        ##            比如判断是否以 “XXX”开头的 路径
+        ##			   下面的配置就是说 如果都是以服务名开头的地址，就转发到  服务名对应的系统上去
+        ## filter     断言为true的时候 ，再经过一系列的filter  ,才会访问到   uri 指定的地址，
+        ##            比如增加一个uri 前缀， 移除uri前面几个路径
+        ##            - PrefixPath=/mypath   在请求uri 前面 拼接上 /mypath      请求 /hello                -->/mypath/hello
+        ##            - StripPrefix=2      移除uri前面2个(/order/mypath)路径   请求  /order/mypath/hello   -->/hello
+        ## 各种  predicate  、filter  再官网都有特定的实现 ，可以参考 官网的 docs
+        - id: ${duoduo.service.order}
+          predicates:
+            - Path= /${duoduo.service.order}/**
+          filters:
+          #- StripPrefix= 1
+          uri: lb://${duoduo.service.order}
+        - id: ${duoduo.service.credits}
+          predicates:
+            - Path= /${duoduo.service.credits}/**
+          filters:
+          #- StripPrefix= 1
+          uri: lb://${duoduo.service.credits}
+        - id: ${duoduo.service.user}
+          predicates:
+            - Path= /${duoduo.service.user}/**
+          filters:
+          #- StripPrefix= 1
+          uri: lb://${duoduo.service.user}
     loadbalancer:
       retry:
         enabled: true
